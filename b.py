@@ -1,24 +1,24 @@
-
+# define variables
 import pexpect
 import os
 ip_address = '192.168.56.101'
 username = 'cisco'
 password = 'cisco123!'
 
-telnet_file_output = os.path.expanduser('~/labs/prne/telnet_running_config.txt')
-ssh_file_output = os.path.expanduser('~/labs/prne/ssh_running_config.txt')
-
+file_output_telnet = os.path.expanduser('~/labs/prne/telnet_running_config.txt')
+file_output_ssh = os.path.expanduser('~/labs/prne/ssh_running_config.txt')
+# create ssh session
 session = pexpect.spawn('telnet ' + ip_address, encoding='utf-8',timeout=20)
 
 result = session.expect(['Username:', pexpect.TIMEOUT])
-
+# check for error if exists then display error and exit
 if result !=0:
     print('---FAILURE! creating session for: ', ip_address)
     exit()
-
+# session expecting password enter details
 session.sendline(username)
 result = session.expect(['Password:', pexpect.TIMEOUT])
-
+# check for error if exists then display error and exit
 if result != 0:
     print ('-- FAILURE! entering username: ', username)
     exit()
@@ -94,7 +94,7 @@ if result != 0:
     print('--- Failure! entering config mode')
     exit()
 
-
+# change hostname
 session.sendline('hostname R1')
 result = session.expect([r'R1\(config\)#', pexpect.TIMEOUT, pexpect.EOF])
 
@@ -119,12 +119,6 @@ print ('-----------------------------------------------------------------')
 
 
 
-
-
-
-
-
-
 session.sendline('show running-config')
 result = session.expect(['#', pexpect.TIMEOUT, pexpect.EOF])
 
@@ -134,10 +128,10 @@ else:
     running_config_ssh = session.before  
 
     
-    with open(ssh_file_output, 'w') as file:
+    with open(file_output_ssh, 'w') as file:
         file.write(running_config_ssh)
 
-    print('--- Success! SSH running config saved to:', ssh_file_output)
+    print('--- Success! SSH running config saved to:', file_output_ssh)
 
 
 session.sendline('exit')
